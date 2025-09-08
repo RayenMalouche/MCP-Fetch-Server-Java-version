@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import com.microsoft.playwright.*;
-import com.overzealous.remark.Remark;
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 
 @Service
 public class WebContentService {
@@ -25,7 +25,7 @@ public class WebContentService {
     private static final Duration HTTP_TIMEOUT = Duration.ofSeconds(TIMEOUT_SECONDS);
 
     private final HttpClient httpClient;
-    private final Remark remarkConverter;
+    private final FlexmarkHtmlConverter htmlConverter;
     private Playwright playwright;
     private BrowserType browserType;
 
@@ -34,7 +34,7 @@ public class WebContentService {
                 .connectTimeout(HTTP_TIMEOUT)
                 .build();
 
-        this.remarkConverter = new Remark();
+        this.htmlConverter = FlexmarkHtmlConverter.builder().build();
 
         // Initialize Playwright for browser operations
         initializePlaywright();
@@ -88,7 +88,7 @@ public class WebContentService {
 
             // Navigate and wait for content to load
             page.navigate(url, new Page.NavigateOptions()
-                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED)
+                    .setWaitUntil(Page.WaitUntilState.DOMCONTENTLOADED)
                     .setTimeout(TIMEOUT_SECONDS * 1000));
 
             return page.content();
@@ -167,7 +167,7 @@ public class WebContentService {
                 dl.replaceWith(Jsoup.parse(dlMarkdown).body());
             }
 
-            return remarkConverter.convert(doc.html());
+            return htmlConverter.convert(doc.html());
 
         } catch (Exception e) {
             System.err.println("Error converting HTML to Markdown: " + e.getMessage());

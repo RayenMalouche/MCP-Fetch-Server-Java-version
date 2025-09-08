@@ -1,17 +1,16 @@
 package com.mcp.RayenMalouche.java.server.Fetch.service;
 
+import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig
 @ExtendWith(MockitoExtension.class)
-class WebContentServiceTest {
+public class WebContentServiceTest {
 
     private WebContentService webContentService;
 
@@ -21,7 +20,7 @@ class WebContentServiceTest {
     }
 
     @Test
-    void testGetRawTextContent_ValidUrl() throws Exception {
+    public void testGetRawTextContent_ValidUrl() throws Exception {
         // Test with a simple HTTP endpoint that returns plain text
         String testUrl = "https://httpbin.org/robots.txt";
 
@@ -36,7 +35,7 @@ class WebContentServiceTest {
     }
 
     @Test
-    void testGetRawTextContent_InvalidUrl() {
+    public void testGetRawTextContent_InvalidUrl() {
         String invalidUrl = "not-a-valid-url";
 
         assertThrows(Exception.class, () -> {
@@ -45,7 +44,7 @@ class WebContentServiceTest {
     }
 
     @Test
-    void testGetRenderedHtmlContent_ValidUrl() throws Exception {
+    public void testGetRenderedHtmlContent_ValidUrl() throws Exception {
         // Test with a simple HTML page
         String testUrl = "https://httpbin.org/html";
 
@@ -61,7 +60,7 @@ class WebContentServiceTest {
     }
 
     @Test
-    void testGetMarkdownContent_ValidUrl() throws Exception {
+    public void testGetMarkdownContent_ValidUrl() throws Exception {
         String testUrl = "https://httpbin.org/html";
 
         try {
@@ -76,7 +75,7 @@ class WebContentServiceTest {
     }
 
     @Test
-    void testGetMarkdownSummary_ValidUrl() throws Exception {
+    public void testGetMarkdownSummary_ValidUrl() throws Exception {
         String testUrl = "https://httpbin.org/html";
 
         try {
@@ -92,7 +91,7 @@ class WebContentServiceTest {
     }
 
     @Test
-    void testCleanup() {
+    public void testCleanup() {
         // Test that cleanup doesn't throw exceptions
         assertDoesNotThrow(() -> {
             webContentService.cleanup();
