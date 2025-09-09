@@ -14,16 +14,16 @@ The server provides four main tools for web content processing:
 ## Project Structure
 
 ```
-src/main/java/com/dicovery/mcp/fetch/server/
-├── FetchServerApplication.java          # Main application class
+src/main/java/com/mcp/RayenMalouche/java/server/Fetch/
+├── FetchApplication.java               # Main application class
 ├── service/
-│   └── WebContentService.java           # Core web content processing service
+│   └── WebContentService.java         # Core web content processing service
 └── tools/
-    ├── BaseFetchTool.java               # Base class for all fetch tools
-    ├── GetRawTextTool.java              # Raw text fetching tool
-    ├── GetRenderedHtmlTool.java         # HTML rendering tool
-    ├── GetMarkdownTool.java             # Markdown conversion tool
-    └── GetMarkdownSummaryTool.java      # Main content extraction tool
+    ├── BaseFetchTool.java              # Base class for all fetch tools
+    ├── GetRawTextTool.java             # Raw text fetching tool
+    ├── GetRenderedHtmlTool.java        # HTML rendering tool
+    ├── GetMarkdownTool.java            # Markdown conversion tool
+    └── GetMarkdownSummaryTool.java     # Main content extraction tool
 ```
 
 ## Prerequisites
@@ -36,8 +36,8 @@ src/main/java/com/dicovery/mcp/fetch/server/
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd mcp-fetch-server-java
+git clone https://github.com/RayenMalouche/MCP-Fetch-Server-Java-version
+cd MCP-Fetch-Server-Java-version
 ```
 
 2. Build the project:
@@ -47,7 +47,7 @@ mvn clean compile
 
 3. Install Playwright browsers (required for rendered HTML functionality):
 ```bash
-mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install"
+mvn exec:java@install-playwright-browsers
 ```
 
 4. Package the application:
@@ -64,16 +64,16 @@ mvn spring-boot:run
 
 ### Production Mode
 ```bash
-java -jar target/fetch-server-1.0.0.jar
+java -jar target/Fetch-0.0.1-SNAPSHOT.jar
 ```
 
-The server will start on port **45451** by default.
+The server will start on port **45455** by default.
 
 ## Configuration
 
-You can modify the server configuration by editing the following constants in `FetchServerApplication.java`:
+You can modify the server configuration by editing the following constants in `FetchApplication.java`:
 
-- `SERVER_PORT`: Change the port number (default: 45451)
+- `SERVER_PORT`: Change the port number (default: 45455)
 - `SERVER_NAME`: Modify the server name
 - `SERVER_VERSION`: Update the version string
 
@@ -132,7 +132,7 @@ The server exposes the following MCP tools via HTTP Server-Sent Events (SSE):
 ### Web Processing
 - **Playwright**: Browser automation for rendered content
 - **JSoup**: HTML parsing and manipulation
-- **Remark**: HTML to Markdown conversion
+- **Flexmark**: HTML to Markdown conversion
 - **Java HTTP Client**: Raw content fetching
 
 ## Error Handling
@@ -165,17 +165,21 @@ mvn test
 ### Playwright Issues
 If you encounter Playwright browser issues:
 ```bash
+mvn exec:java@install-playwright-browsers
+```
+or force reinstall:
+```bash
 mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install --force"
 ```
 
 ### Memory Issues
 For large pages, increase JVM memory:
 ```bash
-java -Xmx2g -jar target/fetch-server-1.0.0.jar
+java -Xmx2g -jar target/Fetch-0.0.1-SNAPSHOT.jar
 ```
 
 ### Port Conflicts
-Change the port in `FetchServerApplication.java` if 45451 is already in use.
+Change the port in `FetchApplication.java` if 45455 is already in use.
 
 ## License
 
