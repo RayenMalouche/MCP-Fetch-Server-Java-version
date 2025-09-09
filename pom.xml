@@ -122,10 +122,10 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency-->
+        </dependency>
     </dependencies>
 
     <build>
