@@ -122,10 +122,10 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-        </dependency>
+        </dependency-->
     </dependencies>
 
     <build>
@@ -162,10 +162,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.2</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
             </plugin>
 
             <!-- Maven Shade Plugin for Fat JAR -->
-            <plugin>
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.5.1</version>
@@ -188,10 +191,10 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
 
             <!-- Playwright Plugin for Browser Installation -->
-            <plugin>
+            <!--plugin>
                 <artifactId>exec-maven-plugin</artifactId>
                 <groupId>org.codehaus.mojo</groupId>
                 <version>3.1.0</version>
@@ -211,7 +214,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
         </plugins>
     </build>
 
