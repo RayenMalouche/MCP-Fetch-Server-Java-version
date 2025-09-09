@@ -1,5 +1,6 @@
 package com.mcp.RayenMalouche.java.server.Fetch.service;
 
+import com.microsoft.playwright.options.WaitUntilState;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -88,7 +89,7 @@ public class WebContentService {
 
             // Navigate and wait for content to load
             page.navigate(url, new Page.NavigateOptions()
-                    .setWaitUntil(Page.WaitUntilState.DOMCONTENTLOADED)
+                    .setWaitUntil(WaitUntilState.DOMCONTENTLOADED)
                     .setTimeout(TIMEOUT_SECONDS * 1000));
 
             return page.content();
