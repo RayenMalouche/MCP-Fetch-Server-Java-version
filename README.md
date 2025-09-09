@@ -19,11 +19,13 @@ src/main/java/com/mcp/RayenMalouche/java/server/Fetch/
 ├── service/
 │   └── WebContentService.java         # Core web content processing service
 └── tools/
-    ├── BaseFetchTool.java              # Base class for all fetch tools
-    ├── GetRawTextTool.java             # Raw text fetching tool
-    ├── GetRenderedHtmlTool.java        # HTML rendering tool
-    ├── GetMarkdownTool.java            # Markdown conversion tool
-    └── GetMarkdownSummaryTool.java     # Main content extraction tool
+│   ├── BaseFetchTool.java              # Base class for all fetch tools
+│   ├── GetRawTextTool.java             # Raw text fetching tool
+│   ├── GetRenderedHtmlTool.java        # HTML rendering tool
+│   ├── GetMarkdownTool.java            # Markdown conversion tool
+│   └── GetMarkdownSummaryTool.java     # Main content extraction tool
+└── controller/
+    └── WebContentController.java       # REST Controller
 ```
 
 ## Prerequisites
@@ -40,14 +42,22 @@ git clone https://github.com/RayenMalouche/MCP-Fetch-Server-Java-version
 cd MCP-Fetch-Server-Java-version
 ```
 
-2. Build the project:
+2. Install Playwright browsers (required for rendered HTML functionality):
+
+For windows: 
+
 ```bash
-mvn clean compile
+# Save the install-playwright.bat script and run it
+install-playwright.bat
+```
+```bash
+# Or manually
+mvn exec:java -Dexec.mainClass="com.microsoft.playwright.CLI" -Dexec.args="install"
 ```
 
-3. Install Playwright browsers (required for rendered HTML functionality):
+3. Build the project:
 ```bash
-mvn exec:java@install-playwright-browsers
+mvn clean compile
 ```
 
 4. Package the application:

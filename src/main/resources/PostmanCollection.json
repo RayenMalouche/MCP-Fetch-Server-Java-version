@@ -1,0 +1,250 @@
+{
+  "info": {
+    "name": "Web Content Fetcher API",
+    "description": "Collection for testing the Web Content Fetcher REST API",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/fetch/health",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "health"]
+        },
+        "description": "Check if the service is running"
+      }
+    },
+    {
+      "name": "Get Available Endpoints",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/fetch/endpoints",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "endpoints"]
+        },
+        "description": "Get information about all available endpoints"
+      }
+    },
+    {
+      "name": "Raw Text - POST",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://httpbin.org/json\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/fetch/raw-text",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "raw-text"]
+        },
+        "description": "Fetch raw text content using POST method"
+      }
+    },
+    {
+      "name": "Raw Text - GET",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/fetch/raw-text?url=https://httpbin.org/json",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "raw-text"],
+          "query": [
+            {
+              "key": "url",
+              "value": "https://httpbin.org/json"
+            }
+          ]
+        },
+        "description": "Fetch raw text content using GET method"
+      }
+    },
+    {
+      "name": "Rendered HTML - POST",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/fetch/rendered-html",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "rendered-html"]
+        },
+        "description": "Fetch fully rendered HTML using POST method"
+      }
+    },
+    {
+      "name": "Rendered HTML - GET",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/fetch/rendered-html?url=https://example.com",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "rendered-html"],
+          "query": [
+            {
+              "key": "url",
+              "value": "https://example.com"
+            }
+          ]
+        },
+        "description": "Fetch fully rendered HTML using GET method"
+      }
+    },
+    {
+      "name": "Markdown - POST",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://en.wikipedia.org/wiki/Markdown\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/fetch/markdown",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "markdown"]
+        },
+        "description": "Convert web page to Markdown using POST method"
+      }
+    },
+    {
+      "name": "Markdown - GET",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/fetch/markdown?url=https://en.wikipedia.org/wiki/Markdown",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "markdown"],
+          "query": [
+            {
+              "key": "url",
+              "value": "https://en.wikipedia.org/wiki/Markdown"
+            }
+          ]
+        },
+        "description": "Convert web page to Markdown using GET method"
+      }
+    },
+    {
+      "name": "Markdown Summary - POST",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"https://news.ycombinator.com\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/fetch/markdown-summary",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "markdown-summary"]
+        },
+        "description": "Get main content as Markdown using POST method"
+      }
+    },
+    {
+      "name": "Markdown Summary - GET",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/fetch/markdown-summary?url=https://news.ycombinator.com",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "markdown-summary"],
+          "query": [
+            {
+              "key": "url",
+              "value": "https://news.ycombinator.com"
+            }
+          ]
+        },
+        "description": "Get main content as Markdown using GET method"
+      }
+    },
+    {
+      "name": "Error Test - Invalid URL",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"url\": \"invalid-url\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/fetch/raw-text",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "raw-text"]
+        },
+        "description": "Test error handling with invalid URL"
+      }
+    },
+    {
+      "name": "Error Test - Missing URL",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/fetch/raw-text",
+          "host": ["{{base_url}}"],
+          "path": ["api", "fetch", "raw-text"]
+        },
+        "description": "Test error handling with missing URL parameter"
+      }
+    }
+  ]
+}

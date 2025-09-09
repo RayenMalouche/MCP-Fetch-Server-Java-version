@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,18 +14,19 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import com.microsoft.playwright.*;
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class WebContentService {
 
-    private static final int TIMEOUT_SECONDS = 20;
-    private static final Duration HTTP_TIMEOUT = Duration.ofSeconds(TIMEOUT_SECONDS);
+    @Value("${webcontent.timeout.seconds:20}")
+    private int timeoutSeconds;
 
+    private Duration httpTimeout;
     private final HttpClient httpClient;
     private final FlexmarkHtmlConverter htmlConverter;
     private Playwright playwright;
@@ -32,10 +34,16 @@ public class WebContentService {
 
     public WebContentService() {
         this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(HTTP_TIMEOUT)
+                .connectTimeout(Duration.ofSeconds(20)) // Default, will be updated in @PostConstruct
                 .build();
 
         this.htmlConverter = FlexmarkHtmlConverter.builder().build();
+    }
+
+    @PostConstruct
+    public void initializeService() {
+        this.httpTimeout = Duration.ofSeconds(timeoutSeconds);
+        System.out.println("WebContentService initialized with timeout: " + timeoutSeconds + " seconds");
 
         // Initialize Playwright for browser operations
         initializePlaywright();
@@ -45,6 +53,7 @@ public class WebContentService {
         try {
             this.playwright = Playwright.create();
             this.browserType = playwright.chromium();
+            System.out.println("Playwright initialized successfully");
         } catch (Exception e) {
             System.err.println("Warning: Could not initialize Playwright. Browser-based operations will fail.");
             System.err.println("Error: " + e.getMessage());
@@ -57,7 +66,7 @@ public class WebContentService {
     public String getRawTextContent(String url) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .timeout(HTTP_TIMEOUT)
+                .timeout(httpTimeout)
                 .header("User-Agent", "Mozilla/5.0 (compatible; MCP-Fetch-Server/1.0)")
                 .GET()
                 .build();
@@ -90,7 +99,7 @@ public class WebContentService {
             // Navigate and wait for content to load
             page.navigate(url, new Page.NavigateOptions()
                     .setWaitUntil(WaitUntilState.DOMCONTENTLOADED)
-                    .setTimeout(TIMEOUT_SECONDS * 1000));
+                    .setTimeout(timeoutSeconds * 1000));
 
             return page.content();
 
@@ -258,6 +267,7 @@ public class WebContentService {
         if (playwright != null) {
             try {
                 playwright.close();
+                System.out.println("Playwright closed successfully");
             } catch (Exception e) {
                 System.err.println("Error closing Playwright: " + e.getMessage());
             }
