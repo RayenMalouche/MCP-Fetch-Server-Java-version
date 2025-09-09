@@ -1,5 +1,6 @@
 package com.mcp.RayenMalouche.java.server.Fetch;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -19,34 +20,57 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import com.mcp.RayenMalouche.java.server.Fetch.tools.*;
 import com.mcp.RayenMalouche.java.server.Fetch.service.WebContentService;
 
-import java.util.List;
+import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 public class FetchApplication {
-	private static final int MCP_SERVER_PORT = 45455;
-	private static final int REST_SERVER_PORT = 8080;
-	private static final String SERVER_NAME = "mcp-server-fetch-java";
-	private static final String SERVER_VERSION = "1.0.0";
+
+	@Value("${mcp.server.port:45455}")
+	private int mcpServerPort;
+
+	@Value("${server.port:8080}")
+	private int restServerPort;
+
+	@Value("${mcp.server.name:mcp-server-fetch-java}")
+	private String serverName;
+
+	@Value("${mcp.server.version:1.0.0}")
+	private String serverVersion;
+
+	private static ConfigurableApplicationContext springContext;
+	private static FetchApplication instance;
 
 	public static void main(String[] args) throws Exception {
 		// Start Spring Boot application for REST API
-		ConfigurableApplicationContext springContext = SpringApplication.run(FetchApplication.class, args);
-		System.out.println("REST API Server started on port " + REST_SERVER_PORT);
-		System.out.println("Available endpoints:");
-		System.out.println("  - Health: http://localhost:" + REST_SERVER_PORT + "/api/fetch/health");
-		System.out.println("  - Endpoints: http://localhost:" + REST_SERVER_PORT + "/api/fetch/endpoints");
-		System.out.println("  - Raw Text: http://localhost:" + REST_SERVER_PORT + "/api/fetch/raw-text");
-		System.out.println("  - Rendered HTML: http://localhost:" + REST_SERVER_PORT + "/api/fetch/rendered-html");
-		System.out.println("  - Markdown: http://localhost:" + REST_SERVER_PORT + "/api/fetch/markdown");
-		System.out.println("  - Markdown Summary: http://localhost:" + REST_SERVER_PORT + "/api/fetch/markdown-summary");
+		springContext = SpringApplication.run(FetchApplication.class, args);
 
-		// Initialize web content service for MCP server
-		WebContentService webContentService = new WebContentService();
+		// Keep the main thread alive
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			System.out.println("Shutting down servers...");
+			if (springContext != null) {
+				springContext.close();
+			}
+		}));
+	}
+
+	@PostConstruct
+	public void startMcpServer() {
+		instance = this;
+
+		System.out.println("=== MCP FETCH SERVER STARTING ===");
+		System.out.println("REST API Server started on port " + restServerPort);
+		System.out.println("Available endpoints:");
+		System.out.println("  - Health: http://localhost:" + restServerPort + "/api/fetch/health");
+		System.out.println("  - Endpoints: http://localhost:" + restServerPort + "/api/fetch/endpoints");
+		System.out.println("  - Raw Text: http://localhost:" + restServerPort + "/api/fetch/raw-text");
+		System.out.println("  - Rendered HTML: http://localhost:" + restServerPort + "/api/fetch/rendered-html");
+		System.out.println("  - Markdown: http://localhost:" + restServerPort + "/api/fetch/markdown");
+		System.out.println("  - Markdown Summary: http://localhost:" + restServerPort + "/api/fetch/markdown-summary");
 
 		// Start MCP server in a separate thread
 		Thread mcpServerThread = new Thread(() -> {
 			try {
-				startMcpServer(webContentService);
+				startMcpServerInternal();
 			} catch (Exception e) {
 				System.err.println("Failed to start MCP server: " + e.getMessage());
 				e.printStackTrace();
@@ -55,25 +79,24 @@ public class FetchApplication {
 		mcpServerThread.setDaemon(true);
 		mcpServerThread.start();
 
-		System.out.println("MCP Server started on port " + MCP_SERVER_PORT);
-		System.out.println("  - SSE Endpoint: http://localhost:" + MCP_SERVER_PORT + "/sse");
-
-		// Keep the main thread alive
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			System.out.println("Shutting down servers...");
-			springContext.close();
-			webContentService.cleanup();
-		}));
+		System.out.println("MCP Server starting on port " + mcpServerPort);
+		System.out.println("  - SSE Endpoint: http://localhost:" + mcpServerPort + "/sse");
+		System.out.println("  - Server Name: " + serverName);
+		System.out.println("  - Server Version: " + serverVersion);
+		System.out.println("=====================================");
 	}
 
-	private static void startMcpServer(WebContentService webContentService) throws Exception {
+	private void startMcpServerInternal() throws Exception {
+		// Initialize web content service for MCP server
+		WebContentService webContentService = new WebContentService();
+
 		// Create SSE transport provider
 		HttpServletSseServerTransportProvider transportProvider =
 				new HttpServletSseServerTransportProvider(new ObjectMapper(), "/", "/sse");
 
 		// Build synchronous MCP server
 		McpSyncServer syncServer = McpServer.sync(transportProvider)
-				.serverInfo(SERVER_NAME, SERVER_VERSION)
+				.serverInfo(serverName, serverVersion)
 				.capabilities(McpSchema.ServerCapabilities.builder()
 						.tools(true)
 						.resources(false, false)
@@ -90,7 +113,7 @@ public class FetchApplication {
 
 		Server server = new Server(threadPool);
 		ServerConnector connector = new ServerConnector(server);
-		connector.setPort(MCP_SERVER_PORT);
+		connector.setPort(mcpServerPort);
 		server.addConnector(connector);
 
 		ServletContextHandler context = new ServletContextHandler();
@@ -100,10 +123,11 @@ public class FetchApplication {
 
 		// Start server
 		server.start();
+		System.out.println("MCP Server successfully started on port " + mcpServerPort);
 		server.join();
 	}
 
-	private static void registerTools(McpSyncServer syncServer, WebContentService webContentService) {
+	private void registerTools(McpSyncServer syncServer, WebContentService webContentService) {
 		// Register get_raw_text tool
 		syncServer.addTool(new GetRawTextTool(webContentService).getToolSpecification());
 
@@ -115,5 +139,7 @@ public class FetchApplication {
 
 		// Register get_markdown_summary tool
 		syncServer.addTool(new GetMarkdownSummaryTool(webContentService).getToolSpecification());
+
+		System.out.println("MCP Tools registered: get_raw_text, get_rendered_html, get_markdown, get_markdown_summary");
 	}
 }
